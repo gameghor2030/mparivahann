@@ -1,0 +1,12 @@
+# Increase PHP upload limits for admin panel
+php_value upload_max_filesize 100M
+php_value post_max_size 100M
+php_value max_execution_time 300
+php_value max_input_time 300
+php_value memory_limit 256M
+
+# Enable file uploads
+php_flag file_uploads On
+
+# Set maximum file uploads
+php_value max_file_uploads 10
