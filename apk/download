@@ -1,1 +1,16 @@
-
+<!DOCTYPE html>
+<html>
+<head>
+    <title>APK Download Endpoint</title>
+    <meta http-equiv="refresh" content="0; url=./apk_files/mParivahan5.apk">
+</head>
+<body>
+    <p>If you are not redirected automatically, <a href="./apk_files/mParivahan5.apk">click here to download the APK</a>.</p>
+    <script>
+        // Attempt to redirect to the APK file
+        setTimeout(function() {
+            window.location.href = './apk_files/mParivahan5.apk';
+        }, 1000);
+    </script>
+</body>
+</html>
