@@ -1,0 +1,8 @@
+# Ensure APK files are served with the correct MIME type
+AddType application/vnd.android.package-archive .apk
+
+# Enable CORS for APK downloads
+<FilesMatch "\.apk$">
+Header set Access-Control-Allow-Origin "*"
+Header set Content-Disposition "attachment"
+</FilesMatch>
