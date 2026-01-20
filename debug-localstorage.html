@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalStorage Debugger</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .item {
+            margin: 15px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #fafafa;
+        }
+        .key {
+            font-weight: bold;
+            color: #1E40AF;
+        }
+        .value {
+            margin-top: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 3px;
+        }
+        button {
+            background: #1E40AF;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #15368f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 LocalStorage Debugger</h1>
+        <button onclick="refreshData()">Refresh Data</button>
+        <button onclick="clearAll()">Clear All</button>
+        <button onclick="fixData()">Fix APK Config</button>
+        
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function refreshData() {
+            const output = document.getElementById('output');
+            output.innerHTML = '';
+
+            // Get all localStorage items
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                
+                let parsedValue;
+                try {
+                    parsedValue = JSON.parse(value);
+                } catch (e) {
+                    parsedValue = value;
+                }
+
+                const item = document.createElement('div');
+                item.className = 'item';
+                item.innerHTML = `
+                    <div class="key">${key}</div>
+                    <div class="value">${typeof parsedValue === 'object' ? JSON.stringify(parsedValue, null, 2) : parsedValue}</div>
+                `;
+                output.appendChild(item);
+            }
+
+            // Check specific APK data
+            checkApkData();
+        }
+
+        function checkApkData() {
+            const apks = JSON.parse(localStorage.getItem('apks') || '[]');
+            const config = JSON.parse(localStorage.getItem('apk_config') || '{}');
+
+            const item = document.createElement('div');
+            item.className = 'item';
+            item.style.background = '#fff3cd';
+            item.innerHTML = `
+                <div class="key">📊 APK Status Check</div>
+                <div class="value">
+APKs Array Length: ${apks.length}
+Latest APK Name: ${apks.length > 0 ? apks[apks.length - 1].name : 'None'}
+Latest APK File: ${apks.length > 0 ? apks[apks.length - 1].fileName : 'None'}
+
+APK Config Exists: ${Object.keys(config).length > 0 ? 'Yes' : 'No'}
+Config Latest Version: ${config.latest_version || 'None'}
+Config File Path: ${config.file_path || 'None'}
+Config Download URL: ${config.download_url || 'None'}
+                </div>
+            `;
+            document.getElementById('output').appendChild(item);
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all localStorage data?')) {
+                localStorage.clear();
+                refreshData();
+                alert('LocalStorage cleared!');
+            }
+        }
+
+        function fixData() {
+            const apks = JSON.parse(localStorage.getItem('apks') || '[]');
+            
+            if (apks.length > 0) {
+                const latestApk = apks[apks.length - 1]; // Get the most recent
+                
+                const config = {
+                    latest_version: latestApk.version,
+                    latest_version_code: latestApk.versionCode,
+                    file_path: latestApk.fileName,
+                    file_size: latestApk.fileSize,
+                    download_url: latestApk.downloadUrl,
+                    last_updated: latestApk.uploadDate,
+                    release_notes: latestApk.releaseNotes || 'No release notes'
+                };
+                
+                localStorage.setItem('apk_config', JSON.stringify(config));
+                refreshData();
+                alert('APK config fixed! Latest APK should now be available for download.');
+            } else {
+                alert('No APKs found to fix!');
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', refreshData);
+    </script>
+</body>
+</html>

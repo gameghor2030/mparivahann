@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Direct Admin Access</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+        .btn {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            margin: 10px;
+            width: 100%;
+        }
+        .btn:hover {
+            background: #0d1a4d;
+        }
+        h1 {
+            color: #1a2a6c;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h1>🔐 Admin Panel</h1>
+        <p>Bypass login and access admin panel directly</p>
+        
+        <button class="btn" onclick="directAccess()">Direct Admin Access</button>
+        <button class="btn" onclick="goToPanel()">Go to Admin Panel</button>
+        <button class="btn" onclick="checkStatus()">Check Status</button>
+        
+        <div id="status" style="margin-top: 20px; padding: 10px;"></div>
+    </div>
+
+    <script>
+        function showMessage(msg, isError = false) {
+            const status = document.getElementById('status');
+            status.innerHTML = msg;
+            status.style.background = isError ? '#ffeaea' : '#e8f4fd';
+            status.style.color = isError ? '#e74c3c' : '#2980b9';
+            status.style.borderRadius = '5px';
+        }
+
+        function directAccess() {
+            try {
+                // Force set admin login status
+                localStorage.setItem('adminLoggedIn', 'true');
+                
+                // Ensure we have required data structures
+                if (!localStorage.getItem('apk_config')) {
+                    localStorage.setItem('apk_config', JSON.stringify({
+                        latest_version: '1.0.0',
+                        latest_version_code: 1,
+                        file_path: 'sample.apk',
+                        file_size: 2621440,
+                        download_url: './apk_files/sample.apk',
+                        last_updated: new Date().toISOString(),
+                        release_notes: 'Initial setup'
+                    }));
+                }
+                
+                if (!localStorage.getItem('apks')) {
+                    localStorage.setItem('apks', JSON.stringify([]));
+                }
+                
+                showMessage('✅ Admin access granted! Click "Go to Admin Panel" below.');
+            } catch (error) {
+                showMessage(`❌ Error: ${error.message}`, true);
+            }
+        }
+
+        function goToPanel() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn');
+            if (isLoggedIn === 'true') {
+                // Try multiple paths to admin panel
+                const paths = [
+                    './admin/admin-panel.html',
+                    '/admin/admin-panel.html', 
+                    'admin/admin-panel.html'
+                ];
+                
+                // Try the most likely path first
+                window.location.href = 'admin/admin-panel.html';
+            } else {
+                showMessage('❌ Please click "Direct Admin Access" first!', true);
+            }
+        }
+
+        function checkStatus() {
+            const isLoggedIn = localStorage.getItem('adminLoggedIn');
+            const hasConfig = localStorage.getItem('apk_config');
+            const hasApks = localStorage.getItem('apks');
+            
+            let status = '<strong>Current Status:</strong><br>';
+            status += `Logged In: ${isLoggedIn === 'true' ? '✅ YES' : '❌ NO'}<br>`;
+            status += `Config Exists: ${hasConfig ? '✅ YES' : '❌ NO'}<br>`;
+            status += `APKs Array: ${hasApks ? '✅ YES' : '❌ NO'}`;
+            
+            showMessage(status);
+        }
+
+        // Auto-check on load
+        document.addEventListener('DOMContentLoaded', checkStatus);
+    </script>
+</body>
+</html>

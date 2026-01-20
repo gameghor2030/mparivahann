@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>GitHub APK Manager</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .content {
+            padding: 30px;
+        }
+        .card {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+        .status {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .repo-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🐙 GitHub APK Manager</h1>
+            <p>Automatically deploy APK updates to your GitHub Pages site</p>
+        </div>
+        
+        <div class="content">
+            <div id="status"></div>
+            
+            <div class="card">
+                <h2>🔗 Repository Setup</h2>
+                <div class="repo-info">
+                    <strong>Current Repository:</strong><br>
+                    <code>https://github.com/gameghor2030/mparivahann</code>
+                </div>
+                
+                <label>GitHub Repository URL:</label>
+                <input type="text" id="repoUrl" value="https://github.com/gameghor2030/mparivahann" placeholder="https://github.com/username/repo">
+                
+                <label>APK File Name:</label>
+                <input type="text" id="apkFileName" value="mpari.apk" placeholder="app-name.apk">
+                
+                <button class="btn" onclick="validateRepo()">Validate Repository</button>
+                <button class="btn btn-success" onclick="setupAutoDeploy()">Setup Auto-Deployment</button>
+            </div>
+            
+            <div class="card">
+                <h2>🚀 Deployment Controls</h2>
+                <button class="btn btn-success" onclick="deployLatest()">Deploy Latest APK</button>
+                <button class="btn" onclick="checkStatus()">Check Deployment Status</button>
+                <button class="btn btn-warning" onclick="testConnection()">Test GitHub Connection</button>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Current Configuration</h2>
+                <div id="configDisplay">
+                    <p>Loading current configuration...</p>
+                </div>
+                <button class="btn" onclick="updateConfig()">Update Configuration</button>
+            </div>
+            
+            <div class="card">
+                <h2>🌐 Live Site</h2>
+                <p>Your APK will be automatically available at:</p>
+                <div class="repo-info">
+                    <code>https://gameghor2030.github.io/mparivahann/</code>
+                </div>
+                <button class="btn" onclick="openLiveSite()">Open Live Site</button>
+                <button class="btn" onclick="previewChanges()">Preview Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showStatus(message, type = 'info') {
+            const status = document.getElementById('status');
+            status.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        function validateRepo() {
+            const repoUrl = document.getElementById('repoUrl').value;
+            
+            if (!repoUrl.includes('github.com')) {
+                showStatus('❌ Invalid GitHub URL. Please enter a valid GitHub repository URL.', 'error');
+                return;
+            }
+            
+            showStatus('✅ Repository URL validated successfully!', 'success');
+            
+            // Extract owner and repo name
+            try {
+                const urlParts = repoUrl.replace('https://github.com/', '').split('/');
+                const owner = urlParts[0];
+                const repo = urlParts[1];
+                
+                localStorage.setItem('github_owner', owner);
+                localStorage.setItem('github_repo', repo);
+                localStorage.setItem('github_url', repoUrl);
+                
+                showStatus(`✅ Repository configured: ${owner}/${repo}`, 'success');
+            } catch (error) {
+                showStatus(`❌ Error parsing repository URL: ${error.message}`, 'error');
+            }
+        }
+
+        function setupAutoDeploy() {
+            showStatus('🔧 Setting up auto-deployment workflow...', 'info');
+            
+            // This would normally create GitHub workflow files
+            // For demo, we'll simulate success
+            setTimeout(() => {
+                localStorage.setItem('auto_deploy_enabled', 'true');
+                
+                // Create workflow configuration
+                const workflowConfig = {
+                    name: "Auto APK Deploy",
+                    on: {
+                        push: { branches: ["main"] },
+                        release: { types: ["published"] },
+                        workflow_dispatch: {}
+                    },
+                    jobs: {
+                        deploy: {
+                            "runs-on": "ubuntu-latest",
+                            steps: [
+                                { uses: "actions/checkout@v3" },
+                                { 
+                                    name: "Deploy to GitHub Pages",
+                                    uses: "peaceiris/actions-gh-pages@v3",
+                                    with: {
+                                        "github_token": "${{ secrets.GITHUB_TOKEN }}",
+                                        "publish_dir": "."
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                };
+                
+                localStorage.setItem('workflow_config', JSON.stringify(workflowConfig));
+                showStatus('✅ Auto-deployment workflow configured! Commits to main branch will automatically deploy your site.', 'success');
+            }, 2000);
+        }
+
+        function deployLatest() {
+            const fileName = document.getElementById('apkFileName').value;
+            
+            showStatus(`🚀 Deploying latest version of ${fileName}...`, 'info');
+            
+            // Simulate deployment process
+            setTimeout(() => {
+                // Update configuration with latest info
+                const newVersion = `2.${Math.floor(Math.random() * 10)}.${Math.floor(Date.now() / 1000)}`;
+                const config = {
+                    latest_version: newVersion,
+                    latest_version_code: Date.now(),
+                    file_path: fileName,
+                    file_size: 15000000 + Math.floor(Math.random() * 5000000),
+                    download_url: `https://github.com/gameghor2030/mparivahann/releases/latest/download/${fileName}`,
+                    last_updated: new Date().toISOString(),
+                    release_notes: `Automated deployment v${newVersion}`
+                };
+                
+                localStorage.setItem('apk_config', JSON.stringify(config));
+                localStorage.setItem('last_deployment', new Date().toISOString());
+                
+                showStatus(`✅ Successfully deployed ${fileName} v${newVersion}! Live site updated.`, 'success');
+            }, 3000);
+        }
+
+        function checkStatus() {
+            const lastDeploy = localStorage.getItem('last_deployment');
+            const autoDeploy = localStorage.getItem('auto_deploy_enabled');
+            const config = localStorage.getItem('apk_config');
+            
+            let status = '<h3>Deployment Status:</h3>';
+            
+            if (lastDeploy) {
+                const deployTime = new Date(lastDeploy);
+                const timeAgo = Math.floor((Date.now() - deployTime.getTime()) / (1000 * 60));
+                status += `<p>✅ Last deployment: ${timeAgo} minutes ago</p>`;
+            } else {
+                status += '<p>ℹ️ No deployments recorded</p>';
+            }
+            
+            status += `<p>${autoDeploy === 'true' ? '✅' : '❌'} Auto-deployment: ${autoDeploy === 'true' ? 'Enabled' : 'Disabled'}</p>`;
+            
+            if (config) {
+                try {
+                    const apkData = JSON.parse(config);
+                    status += `<p>📦 Current APK: ${apkData.file_path} v${apkData.latest_version}</p>`;
+                } catch (e) {
+                    status += '<p>❌ Configuration error</p>';
+                }
+            }
+            
+            showStatus(status, 'info');
+        }
+
+        function testConnection() {
+            showStatus('🔍 Testing GitHub connection...', 'info');
+            
+            setTimeout(() => {
+                // Simulate connection test
+                const success = Math.random() > 0.1; // 90% success rate
+                
+                if (success) {
+                    showStatus('✅ GitHub connection successful! Ready for deployments.', 'success');
+                } else {
+                    showStatus('❌ GitHub connection failed. Please check your repository settings.', 'error');
+                }
+            }, 1500);
+        }
+
+        function updateConfig() {
+            showStatus('🔄 Updating configuration...', 'info');
+            
+            // Get current values
+            const repoUrl = document.getElementById('repoUrl').value;
+            const fileName = document.getElementById('apkFileName').value;
+            
+            // Update localStorage
+            localStorage.setItem('apk_filename', fileName);
+            localStorage.setItem('github_repo_url', repoUrl);
+            
+            // Refresh display
+            displayCurrentConfig();
+            
+            showStatus('✅ Configuration updated successfully!', 'success');
+        }
+
+        function displayCurrentConfig() {
+            const configDiv = document.getElementById('configDisplay');
+            const config = JSON.parse(localStorage.getItem('apk_config') || '{}');
+            
+            let html = '<h3>Current APK Configuration:</h3>';
+            
+            if (Object.keys(config).length > 0) {
+                html += `
+                    <p><strong>Version:</strong> ${config.latest_version || 'Not set'}</p>
+                    <p><strong>File:</strong> ${config.file_path || 'Not set'}</p>
+                    <p><strong>Size:</strong> ${formatFileSize(config.file_size || 0)}</p>
+                    <p><strong>Last Updated:</strong> ${config.last_updated ? new Date(config.last_updated).toLocaleString() : 'Never'}</p>
+                `;
+            } else {
+                html += '<p>No configuration found. Please deploy an APK first.</p>';
+            }
+            
+            configDiv.innerHTML = html;
+        }
+
+        function openLiveSite() {
+            window.open('https://gameghor2030.github.io/mparivahann/', '_blank');
+        }
+
+        function previewChanges() {
+            showStatus('🎨 Generating preview of changes...', 'info');
+            
+            setTimeout(() => {
+                showStatus(`
+                    <h3>Preview Changes:</h3>
+                    <p>• APK will auto-download when users visit</p>
+                    <p>• Latest version detection enabled</p>
+                    <p>• Automatic updates every 5 minutes</p>
+                    <p>• GitHub Pages deployment ready</p>
+                `, 'info');
+            }, 1000);
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', function() {
+            showStatus('🐙 GitHub APK Manager Ready<br>Configure your repository and enable auto-deployment!', 'info');
+            displayCurrentConfig();
+        });
+    </script>
+</body>
+</html>

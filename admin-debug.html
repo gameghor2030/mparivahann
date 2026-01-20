@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Login Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; }
+        .log { background: #f0f0f0; padding: 10px; margin: 10px 0; border-radius: 5px; font-family: monospace; }
+        .error { background: #ffeaea; color: #e74c3c; }
+        .success { background: #e8f5e8; color: #27ae60; }
+        button { padding: 10px 20px; margin: 5px; background: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐛 Admin Login Debugger</h1>
+        
+        <div id="logs"></div>
+        
+        <button onclick="testLogin()">Test Login Process</button>
+        <button onclick="clearLogs()">Clear Logs</button>
+        <button onclick="manualLogin()">Manual Login</button>
+        
+        <div style="margin-top: 20px;">
+            <h3>Manual Login Form:</h3>
+            <input type="text" id="adminId" placeholder="Admin ID" value="admin"><br><br>
+            <input type="password" id="password" placeholder="Password" value="admin1234"><br><br>
+            <button onclick="attemptLogin()">Attempt Login</button>
+        </div>
+    </div>
+
+    <script>
+        function log(message, type = '') {
+            const logs = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = `log ${type}`;
+            entry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logs.appendChild(entry);
+            console.log(message);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+        }
+
+        function testLogin() {
+            log('Starting login test...', '');
+            
+            // Test localStorage access
+            try {
+                localStorage.setItem('test', 'test');
+                const testVal = localStorage.getItem('test');
+                if (testVal === 'test') {
+                    log('✅ localStorage working correctly', 'success');
+                } else {
+                    log('❌ localStorage not working properly', 'error');
+                    return;
+                }
+                localStorage.removeItem('test');
+            } catch (e) {
+                log(`❌ localStorage error: ${e.message}`, 'error');
+                return;
+            }
+
+            // Test form elements
+            const adminId = document.getElementById('adminId');
+            const password = document.getElementById('password');
+            
+            if (adminId && password) {
+                log('✅ Form elements found', 'success');
+            } else {
+                log('❌ Form elements missing', 'error');
+                return;
+            }
+
+            // Test credential validation
+            if (adminId.value === 'admin' && password.value === 'admin1234') {
+                log('✅ Credentials validation working', 'success');
+            } else {
+                log('❌ Credential validation failed', 'error');
+            }
+        }
+
+        function manualLogin() {
+            log('Attempting manual login setup...', '');
+            
+            try {
+                localStorage.setItem('adminLoggedIn', 'true');
+                log('✅ Set adminLoggedIn to true', 'success');
+                
+                // Go to admin panel
+                setTimeout(() => {
+                    log('Redirecting to admin panel...', '');
+                    window.location.href = './admin/admin-panel.html';
+                }, 1000);
+                
+            } catch (e) {
+                log(`❌ Login setup failed: ${e.message}`, 'error');
+            }
+        }
+
+        function attemptLogin() {
+            const adminId = document.getElementById('adminId').value;
+            const password = document.getElementById('password').value;
+            
+            log(`Attempting login with ID: ${adminId}`, '');
+            
+            if (adminId === 'admin' && password === 'admin1234') {
+                log('✅ Valid credentials entered', 'success');
+                localStorage.setItem('adminLoggedIn', 'true');
+                log('✅ Login successful, redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = './admin/admin-panel.html';
+                }, 1000);
+            } else {
+                log('❌ Invalid credentials', 'error');
+            }
+        }
+
+        // Auto-run diagnostics
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Admin Login Debugger Loaded', '');
+            testLogin();
+        });
+    </script>
+</body>
+</html>

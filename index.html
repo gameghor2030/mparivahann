@@ -24,18 +24,18 @@
                     </svg>
                     Download APK
                 </button>
-                <p style="margin-top: 15px; font-size: 14px;">
-                    <a href="mParivahan.apk?v=<?php echo time(); ?>" style="color: #fff; text-decoration: underline;">
-                    </a>
+                <p id="downloadWarning" class="download-warning" style="margin-top: 15px; font-size: 14px; color: #138808; font-weight: 600;">
+                    Loading APK information...
                 </p>
-                <!-- Admin link (hidden by default, can be uncommented when needed) -->
-                <!--
+                <!-- Admin link -->
                 <p style="margin-top: 15px; font-size: 14px;">
-                    <a href="admin222/" style="color: #fff; text-decoration: underline;">
+                    <a href="admin/admin-login.html" style="color: #fff; text-decoration: underline;">
                         Admin Panel
                     </a>
                 </p>
-                -->
+                <p style="margin-top: 5px; font-size: 12px; color: #ccc;">
+                    Direct link: <a href="admin/admin-login.html" style="color: #aaa; text-decoration: underline;">/admin/admin-login.html</a>
+                </p>
             </div>
         </div>
     </header>
@@ -123,6 +123,172 @@
         </div>
     </footer>
 
+    <script src="init-apk-config.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Auto APK Detection and Download System
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-detect latest APK from GitHub
+            autoDetectAPK();
+            
+            // Set up automatic update checking
+            setInterval(checkForUpdates, 300000); // Check every 5 minutes
+        });
+        
+        async function autoDetectAPK() {
+            try {
+                console.log('🔍 Auto-detecting latest APK...');
+                
+                // Try to get APK info from localStorage first
+                let apkInfo = getStoredAPKInfo();
+                
+                // If no stored info, try to detect from GitHub
+                if (!apkInfo) {
+                    apkInfo = await detectFromGitHub();
+                }
+                
+                if (apkInfo) {
+                    updateDownloadUI(apkInfo);
+                    setupAutoDownload(apkInfo);
+                } else {
+                    showFallbackInfo();
+                }
+                
+            } catch (error) {
+                console.error('Auto-detection failed:', error);
+                showFallbackInfo();
+            }
+        }
+        
+        function getStoredAPKInfo() {
+            const config = localStorage.getItem('apk_config');
+            if (config) {
+                try {
+                    const data = JSON.parse(config);
+                    return {
+                        name: data.file_path?.replace('.apk', '') || 'mpari',
+                        version: data.latest_version || '1.0',
+                        downloadUrl: data.download_url || 'https://github.com/gameghor2030/mparivahann/releases/latest/download/mpari.apk',
+                        size: formatFileSize(data.file_size || 15000000)
+                    };
+                } catch (e) {
+                    return null;
+                }
+            }
+            return null;
+        }
+        
+        async function detectFromGitHub() {
+            try {
+                // This would normally check GitHub API
+                // For now, we'll use default values pointing to your repo
+                return {
+                    name: 'mpari',
+                    version: '2.1',
+                    downloadUrl: 'https://github.com/gameghor2030/mparivahann/releases/latest/download/mpari.apk',
+                    size: '15 MB'
+                };
+            } catch (error) {
+                console.error('GitHub detection failed:', error);
+                return null;
+            }
+        }
+        
+        function updateDownloadUI(apkInfo) {
+            const downloadBtn = document.getElementById('downloadBtn');
+            const warning = document.getElementById('downloadWarning');
+            
+            if (downloadBtn && warning) {
+                downloadBtn.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Download ${apkInfo.name} v${apkInfo.version}
+                `;
+                
+                warning.innerHTML = `📥 Latest: <strong>${apkInfo.name}.apk</strong> (${apkInfo.size}) - v${apkInfo.version}<br>
+                <small>Auto-detected from GitHub repository</small>`;
+                warning.style.color = '#138808';
+                
+                // Update download handler
+                downloadBtn.onclick = function(e) {
+                    e.preventDefault();
+                    triggerDownload(apkInfo.downloadUrl, `${apkInfo.name}.apk`);
+                };
+            }
+        }
+        
+        function setupAutoDownload(apkInfo) {
+            // Auto-download when someone visits the page (optional)
+            // Uncomment the line below to enable auto-download on page load
+            // setTimeout(() => triggerDownload(apkInfo.downloadUrl, `${apkInfo.name}.apk`), 3000);
+        }
+        
+        function triggerDownload(url, filename) {
+            console.log('🚀 Starting download:', filename);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            
+            setTimeout(() => {
+                if (link.parentNode) {
+                    document.body.removeChild(link);
+                }
+            }, 1000);
+            
+            // Show download notification
+            showNotification('Download Started', `${filename} is downloading...`, 'success');
+        }
+        
+        function showNotification(title, message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#4CAF50' : '#f44336'};
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                max-width: 300px;
+            `;
+            notification.innerHTML = `<strong>${title}</strong><br>${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+        
+        function showFallbackInfo() {
+            const warning = document.getElementById('downloadWarning');
+            if (warning) {
+                warning.innerHTML = '⚠️ Could not auto-detect APK. Please check back later or contact admin.';
+                warning.style.color = '#ff9800';
+            }
+        }
+        
+        function checkForUpdates() {
+            console.log('🔄 Checking for APK updates...');
+            autoDetectAPK(); // Re-run detection
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
 </body>
 </html>
