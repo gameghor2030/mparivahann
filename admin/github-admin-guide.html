@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Admin System Guide</title>
+    <style>
+        :root {
+            --primary-color: #24292e;
+            --secondary-color: #f6f8fa;
+            --accent-color: #0969da;
+            --success-color: #2da44e;
+            --warning-color: #d4a72c;
+            --danger-color: #cf222e;
+            --text-primary: #24292e;
+            --text-secondary: #656d76;
+            --border-color: #d0d7de;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin: 0;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin: 1.5rem 0 1rem 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5rem;
+        }
+
+        h3 {
+            color: var(--accent-color);
+            margin: 1.2rem 0 0.8rem 0;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .step {
+            background-color: var(--secondary-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .security-note {
+            background-color: rgba(207, 34, 46, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .tip {
+            background-color: rgba(45, 164, 78, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+
+        .code-block {
+            background-color: #f6f8fa;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--accent-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            margin: 1rem 0;
+        }
+
+        .btn:hover {
+            background-color: #0a5bc4;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📱 GitHub Admin System Guide</h1>
+        </header>
+
+        <section>
+            <h2>Overview</h2>
+            <p>The GitHub Admin System is a lightweight, client-side admin panel that allows you to manage app details and download links by directly updating files in a GitHub repository. This system operates entirely in the browser using HTML, CSS, and JavaScript with no server-side processing required.</p>
+        </section>
+
+        <section>
+            <h2>Features</h2>
+            <ul>
+                <li>✅ Update app configuration files in GitHub repositories</li>
+                <li>🔒 Secure credential handling with local storage encryption</li>
+                <li>👁️ Password visibility toggle for safer token entry</li>
+                <li>💾 Option to save credentials locally (encrypted)</li>
+                <li>🔄 Automatic SHA validation for file updates</li>
+                <li>📋 Form validation for app configuration fields</li>
+                <li>📤 Direct integration with GitHub Content API</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Prerequisites</h2>
+            <div class="step">
+                <h3>Step 1: Create a GitHub Personal Access Token</h3>
+                <ol>
+                    <li>Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)</li>
+                    <li>Click "Generate new token"</li>
+                    <li>Select the scopes required for your repository (typically "repo" for private repos, "public_repo" for public repos)</li>
+                    <li>Copy the generated token (you won't see it again)</li>
+                </ol>
+                <p><strong>Note:</strong> Store your token securely and never share it publicly.</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 2: Identify Your Repository and Config File</h3>
+                <p>You'll need:</p>
+                <ul>
+                    <li>Your GitHub repository name (format: owner/repository)</li>
+                    <li>The path to your configuration file (e.g., <code>apk_config.json</code>)</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Using the Admin System</h2>
+            <div class="step">
+                <h3>Step 1: Access the Admin Panel</h3>
+                <p>Navigate to <a href="./github-admin.html">github-admin.html</a> in your browser</p>
+            </div>
+
+            <div class="step">
+                <h3>Step 2: Enter Authentication Details</h3>
+                <ul>
+                    <li>Enter your GitHub Personal Access Token in the token field</li>
+                    <li>Enter your repository name in the format "owner/repository"</li>
+                    <li>Enter the path to your configuration file</li>
+                    <li>(Optional) Check "Remember credentials" to store encrypted credentials locally</li>
+                    <li>Click "Connect to GitHub"</li>
+                </ul>
+            </div>
+
+            <div class="step">
+                <h3>Step 3: Manage App Details</h3>
+                <p>Once connected, you can:</p>
+                <ul>
+                    <li>View current configuration</li>
+                    <li>Edit app version, download URL, file path, and release notes</li>
+                    <li>Validate the configuration before saving</li>
+                    <li>Save updates directly to your GitHub repository</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Security Best Practices</h2>
+            <div class="security-note">
+                <h3>Important Security Notes</h3>
+                <ul>
+                    <li>Never commit your GitHub token to version control</li>
+                    <li>Use tokens with minimal required permissions</li>
+                    <li>Regularly rotate your personal access tokens</li>
+                    <li>Be cautious when using "Remember credentials" on shared computers</li>
+                    <li>Log out when finished using the admin panel</li>
+                </ul>
+            </div>
+
+            <div class="tip">
+                <h3>Security Tips</h3>
+                <ul>
+                    <li>Tokens are stored locally using basic obfuscation (not strong encryption)</li>
+                    <li>Sensitive data is cleared from memory on page unload</li>
+                    <li>All API calls are made directly from the browser to GitHub</li>
+                    <li>No server stores your credentials</li>
+                </ul>
+            </div>
+        </section>
+
+        <section>
+            <h2>Configuration File Format</h2>
+            <p>The system expects a JSON configuration file with the following structure:</p>
+            <div class="code-block">
+{
+    "latest_version": "1.0.0",
+    "latest_version_code": 1,
+    "download_url": "https://example.com/app.apk",
+    "file_path": "app.apk",
+    "file_size": 1048576,
+    "release_notes": "Initial release",
+    "last_updated": "2023-01-01T00:00:00.000Z"
+}
+            </div>
+        </section>
+
+        <section>
+            <h2>Troubleshooting</h2>
+            <h3>Common Issues:</h3>
+            <ul>
+                <li><strong>Authentication Failed:</strong> Verify your token has correct permissions and hasn't expired</li>
+                <li><strong>File Not Found:</strong> Check the file path is correct and the file exists in the repository</li>
+                <li><strong>CORS Error:</strong> Ensure GitHub's API endpoints are accessible from your domain</li>
+                <li><strong>Network Error:</strong> Check your internet connection and firewall settings</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Access Admin Panel</h2>
+            <p><a href="./github-admin.html" class="btn">Open GitHub Admin Panel</a></p>
+        </section>
+    </div>
+</body>
+</html>

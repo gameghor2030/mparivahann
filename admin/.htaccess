@@ -1,0 +1,14 @@
+# Security measures for admin directory
+# Allow file uploads and set appropriate limits if supported
+# Commented out directives that may cause 500 errors on some hosts
+
+# If your host supports these directives, uncomment them
+# php_value upload_max_filesize 100M
+# php_value post_max_size 100M
+# php_value max_execution_time 300
+# php_value max_input_time 300
+# php_value memory_limit 256M
+# php_flag file_uploads On
+# php_value max_file_uploads 10
+
+RewriteEngine On
